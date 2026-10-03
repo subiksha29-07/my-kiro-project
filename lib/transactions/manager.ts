@@ -2,9 +2,6 @@
  * Transaction business logic layer for the Smart Expense Tracker.
  * All functions are pure — they receive the current store array as a parameter
  * and return a new array. No mutation of inputs. No I/O. No React.
- *
- * Wave 3 implements: addTransaction
- * Later waves add: getTransactions, updateTransaction, deleteTransaction
  */
 
 import type {
@@ -68,13 +65,138 @@ export function addTransaction(
 }
 
 // ─── getTransactions ──────────────────────────────────────────────────────────
-// Implemented in Wave 4.
+
+/**
+ * Returns a filtered and sorted copy of the transaction store.
+ *
+ * Sorting (applied after filtering):
+ *   Primary key:   `date` descending (most recent date first).
+ *   Tie-breaker:   `createdAt` descending (most recently recorded first).
+ *
+ * Filtering:
+ *   - `filters.type`     — exact match on `transaction.type`
+ *   - `filters.category` — exact match on `transaction.category`
+ *   - When both are set, both must match (AND logic).
+ *   - When no filter matches, returns [].
+ *
+ * The input `store` array is never mutated.
+ *
+ * Requirements: 2.1, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
+ */
+export function getTransactions(
+  store: readonly Transaction[],
+  filters?: FilterOptions,
+): Transaction[] {
+  let result: Transaction[] = [...store];
+
+  // Apply filters (AND logic — all supplied filters must match).
+  if (filters?.type !== undefined) {
+    result = result.filter((t) => t.type === filters.type);
+  }
+  if (filters?.category !== undefined) {
+    result = result.filter((t) => t.category === filters.category);
+  }
+
+  // Sort: date desc (primary), createdAt desc (tie-breaker).
+  result.sort((a, b) => {
+    if (a.date !== b.date) {
+      // Lexicographic comparison works correctly for ISO YYYY-MM-DD strings.
+      return a.date > b.date ? -1 : 1;
+    }
+    // Same date — fall back to createdAt for deterministic ordering.
+    return a.createdAt > b.createdAt ? -1 : 1;
+  });
+
+  return result;
+}
 
 // ─── updateTransaction ────────────────────────────────────────────────────────
-// Implemented in Wave 4.
+
+/**
+ * Updates the fields of an existing transaction, preserving its `id` and `createdAt`.
+ *
+ * Stale-update protection: `expectedUpdatedAt` is the `updatedAt` value the
+ * caller last observed. If the stored transaction's `updatedAt` differs,
+ * the store has been modified since the caller loaded it, and this function
+ * returns STALE_UPDATE without applying any changes.
+ *
+ * @param store            - The current immutable transaction list.
+ * @param id               - The UUID of the transaction to update.
+ * @param input            - The new field values to apply.
+ * @param expectedUpdatedAt - The `updatedAt` value the caller last saw.
+ * @returns
+ *   - `{ ok: false, error: 'NOT_FOUND' }` if no transaction with `id` exists.
+ *   - `{ ok: false, error: 'STALE_UPDATE' }` if `updatedAt` has changed.
+ *   - `{ ok: true, data: { store, transaction } }` on success.
+ *
+ * Requirements: 3.2, 3.4, 3.6
+ */
+export function updateTransaction(
+  store: readonly Transaction[],
+  id: string,
+  input: TransactionInput,
+  expectedUpdatedAt: string,
+): ManagerResult<{ store: Transaction[]; transaction: Transaction }> {
+  const index = store.findIndex((t) => t.id === id);
+
+  if (index === -1) {
+    return { ok: false, error: 'NOT_FOUND' };
+  }
+
+  const existing = store[index];
+
+  if (existing.updatedAt !== expectedUpdatedAt) {
+    return { ok: false, error: 'STALE_UPDATE' };
+  }
+
+  const updated: Transaction = {
+    ...existing,          // preserve id, createdAt, and any fields not in input
+    title: input.title,
+    amount: input.amount,
+    type: input.type,
+    category: input.category,
+    date: input.date,
+    description: input.description,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const newStore: Transaction[] = [
+    ...store.slice(0, index),
+    updated,
+    ...store.slice(index + 1),
+  ];
+
+  return { ok: true, data: { store: newStore, transaction: updated } };
+}
 
 // ─── deleteTransaction ────────────────────────────────────────────────────────
-// Implemented in Wave 4.
+
+/**
+ * Removes a transaction from the store by its unique identifier.
+ *
+ * @param store - The current immutable transaction list.
+ * @param id    - The UUID of the transaction to remove.
+ * @returns
+ *   - `{ ok: false, error: 'NOT_FOUND' }` if no transaction with `id` exists.
+ *   - `{ ok: true, data: { store } }` on success, with the transaction removed.
+ *
+ * Requirements: 4.1, 4.2
+ */
+export function deleteTransaction(
+  store: readonly Transaction[],
+  id: string,
+): ManagerResult<{ store: Transaction[] }> {
+  const exists = store.some((t) => t.id === id);
+
+  if (!exists) {
+    return { ok: false, error: 'NOT_FOUND' };
+  }
+
+  return {
+    ok: true,
+    data: { store: store.filter((t) => t.id !== id) },
+  };
+}
 
 // Re-export result type for consumers that import only from manager.
 export type { ManagerResult, FilterOptions };
