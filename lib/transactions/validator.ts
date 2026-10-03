@@ -37,9 +37,18 @@ function isValidDateString(dateStr: string): boolean {
   // Parse as UTC midnight to avoid timezone shift.
   const date = new Date(`${dateStr}T00:00:00.000Z`);
 
+  // Some environments throw RangeError for out-of-range months/days (e.g. month 13).
+  // Others return Invalid Date. Handle both.
+  let isoDate: string;
+  try {
+    isoDate = date.toISOString().slice(0, 10);
+  } catch {
+    // RangeError: Invalid time value — the date string is invalid.
+    return false;
+  }
+
   // new Date() silently rolls over invalid dates (e.g. 2023-02-30 → 2023-03-02).
   // Confirm the parsed components still match the original string.
-  const isoDate = date.toISOString().slice(0, 10);
   if (isoDate !== dateStr) return false;
 
   return date >= MIN_DATE && date <= MAX_DATE;
