@@ -5,6 +5,8 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   test: {
+    // Include both *.test.ts unit tests and *.pbt.ts property-based tests.
+    include: ['**/*.{test,spec,pbt}.?(c|m)[jt]s?(x)'],
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
