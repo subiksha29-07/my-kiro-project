@@ -14,7 +14,7 @@ export default function LandingPage() {
           className="pointer-events-none absolute left-0 top-0 h-full w-1/2"
           style={{
             background:
-              'radial-gradient(ellipse 90% 80% at 0% 50%, rgba(209,250,229,0.55) 0%, rgba(255,255,255,0) 70%)',
+              'radial-gradient(ellipse 90% 80% at 0% 50%, rgba(221,214,254,0.55) 0%, rgba(255,255,255,0) 70%)',
           }}
           aria-hidden
         />
@@ -25,8 +25,8 @@ export default function LandingPage() {
             {/* ── LEFT: copy ── */}
             <div className="flex flex-col items-start py-0 lg:py-16 lg:pr-10 z-10">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 mb-8 tracking-wide">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+              <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3.5 py-1.5 text-xs font-semibold text-violet-700 mb-8 tracking-wide">
+                <span className="h-1.5 w-1.5 rounded-full bg-violet-500" aria-hidden />
                 Your money. Your goals.
               </div>
 
@@ -34,7 +34,7 @@ export default function LandingPage() {
               <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-slate-900 leading-[1.1] tracking-tight">
                 Take control of
                 <br />
-                <span className="text-emerald-500">your finances</span>
+                <span className="text-violet-500">your finances</span>
               </h1>
 
               {/* Sub-copy */}
@@ -48,7 +48,7 @@ export default function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
                 >
                   View Dashboard
                   <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden>
@@ -57,7 +57,7 @@ export default function LandingPage() {
                 </Link>
                 <Link
                   href="/transactions"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:border-emerald-300 hover:text-emerald-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:border-violet-300 hover:text-violet-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
                 >
                   <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden>
                     <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
@@ -74,7 +74,7 @@ export default function LandingPage() {
                 className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    'radial-gradient(ellipse 70% 60% at 60% 50%, rgba(209,250,229,0.4) 0%, transparent 70%)',
+                    'radial-gradient(ellipse 70% 60% at 60% 50%, rgba(221,214,254,0.4) 0%, transparent 70%)',
                 }}
                 aria-hidden
               />
@@ -144,13 +144,13 @@ export default function LandingPage() {
                   {/* Sidebar */}
                   <rect x="154" y="80" width="68" height="238" fill="#F1F5F9"/>
                   {/* sidebar logo */}
-                  <rect x="162" y="90" width="20" height="20" rx="5" fill="#22C55E"/>
-                  <rect x="164" y="92" width="16" height="16" rx="3" fill="#16A34A"/>
+                  <rect x="162" y="90" width="20" height="20" rx="5" fill="#7C3AED"/>
+                  <rect x="164" y="92" width="16" height="16" rx="3" fill="#6D28D9"/>
                   {/* sidebar nav items */}
                   {[110, 136, 162, 188].map((y, i) => (
                     <g key={y}>
-                      <rect x="162" y={y} width="8" height="8" rx="2" fill={i === 0 ? '#22C55E' : '#CBD5E1'}/>
-                      <rect x="174" y={y + 1} width={i === 0 ? 32 : 26} height="6" rx="2" fill={i === 0 ? '#86EFAC' : '#E2E8F0'}/>
+                      <rect x="162" y={y} width="8" height="8" rx="2" fill={i === 0 ? '#7C3AED' : '#CBD5E1'}/>
+                      <rect x="174" y={y + 1} width={i === 0 ? 32 : 26} height="6" rx="2" fill={i === 0 ? '#DDD6FE' : '#E2E8F0'}/>
                     </g>
                   ))}
 
@@ -184,7 +184,7 @@ export default function LandingPage() {
 
                   {/* ── Recent Transactions label ── */}
                   <rect x="224" y="198" width="72" height="7" rx="2" fill="#94A3B8"/>
-                  <rect x="372" y="198" width="32" height="7" rx="2" fill="#22C55E"/>
+                  <rect x="372" y="198" width="32" height="7" rx="2" fill="#7C3AED"/>
 
                   {/* Transaction rows */}
                   {[
@@ -211,13 +211,13 @@ export default function LandingPage() {
                 <div className="absolute top-[10%] left-[-8%] hidden lg:flex flex-col bg-white rounded-2xl shadow-xl border border-slate-100 px-4 py-3 min-w-[130px]">
                   <span className="text-xs text-slate-400 font-medium">Total Balance</span>
                   <span className="text-lg font-extrabold text-slate-900 mt-0.5">$2,480.00</span>
-                  <span className="text-xs text-emerald-500 font-semibold mt-0.5">↑ +12% vs last month</span>
+                  <span className="text-xs text-violet-500 font-semibold mt-0.5">↑ +12% vs last month</span>
                 </div>
 
                 {/* Floating badge — savings */}
                 <div className="absolute bottom-[18%] right-[-4%] hidden lg:flex items-center gap-2 bg-white rounded-xl shadow-lg border border-slate-100 px-3 py-2">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                    <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-emerald-600" aria-hidden>
+                  <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-violet-600" aria-hidden>
                       <path fillRule="evenodd" d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm9-3.25a.75.75 0 0 0-1.5 0V8c0 .27.144.518.378.651l2.5 1.5a.75.75 0 1 0 .744-1.302L9 7.596V4.75Z" clipRule="evenodd"/>
                     </svg>
                   </div>
@@ -243,9 +243,9 @@ export default function LandingPage() {
               {
                 value: '3',
                 label: 'Core features',
-                bg: 'bg-emerald-100',
+                bg: 'bg-violet-100',
                 icon: (
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-emerald-600" aria-hidden>
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-violet-600" aria-hidden>
                     <path fillRule="evenodd" d="M2 4.25A2.25 2.25 0 0 1 4.25 2h11.5A2.25 2.25 0 0 1 18 4.25v8.5A2.25 2.25 0 0 1 15.75 15h-3.105a3.501 3.501 0 0 0 1.1 1.677A.75.75 0 0 1 13.26 18H6.74a.75.75 0 0 1-.484-1.323A3.501 3.501 0 0 0 7.355 15H4.25A2.25 2.25 0 0 1 2 12.75v-8.5ZM10 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" clipRule="evenodd"/>
                   </svg>
                 ),
@@ -291,7 +291,7 @@ export default function LandingPage() {
       <section className="bg-slate-50 py-20 px-6" aria-label="Features">
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-14">
-            <span className="inline-block rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700 uppercase tracking-widest mb-3">
+            <span className="inline-block rounded-full bg-violet-50 border border-violet-200 px-3 py-1 text-xs font-semibold text-violet-700 uppercase tracking-widest mb-3">
               Everything you need
             </span>
             <h2 className="text-3xl font-bold text-slate-900">Built for real budgeting</h2>
@@ -306,9 +306,9 @@ export default function LandingPage() {
                 title: 'Balance at a Glance',
                 desc: 'Total income, expenses, and balance — calculated instantly in colour-coded cards that update in real time.',
                 tags: ['Real-time', 'Auto-calc'],
-                tagColors: ['bg-emerald-50 text-emerald-700 border-emerald-100', 'bg-slate-50 text-slate-600 border-slate-200'],
-                iconBg: 'bg-emerald-50',
-                hoverBorder: 'hover:border-emerald-200',
+                tagColors: ['bg-violet-50 text-violet-700 border-violet-100', 'bg-slate-50 text-slate-600 border-slate-200'],
+                iconBg: 'bg-violet-50',
+                hoverBorder: 'hover:border-violet-200',
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" aria-hidden>
                     <path d="M12 3v1m0 16v1M4.22 4.22l.707.707m12.727 12.727.707.707M3 12h1m16 0h1M4.22 19.78l.707-.707m12.727-12.727.707-.707" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round"/>
@@ -365,14 +365,14 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════════════════════════
           CTA
       ════════════════════════════════════════════════════════════ */}
-      <section className="relative bg-emerald-600 py-16 px-6 text-center text-white overflow-hidden" aria-label="Call to action">
+      <section className="relative bg-violet-600 py-16 px-6 text-center text-white overflow-hidden" aria-label="Call to action">
         <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '22px 22px' }} aria-hidden/>
         <div className="relative mx-auto max-w-xl">
           <h2 className="text-2xl sm:text-3xl font-bold">Ready to start tracking?</h2>
-          <p className="mt-2 text-emerald-100 text-sm sm:text-base">No setup. No sign-up. Just open and go.</p>
+          <p className="mt-2 text-violet-100 text-sm sm:text-base">No setup. No sign-up. Just open and go.</p>
           <Link
             href="/dashboard"
-            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-emerald-700 shadow hover:bg-emerald-50 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-600"
+            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-violet-700 shadow hover:bg-violet-50 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600"
           >
             Open Dashboard
             <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden>
@@ -388,7 +388,7 @@ export default function LandingPage() {
       <footer className="bg-slate-900 py-8 px-6">
         <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
               <svg viewBox="0 0 20 20" fill="white" className="w-4 h-4" aria-hidden>
                 <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.255-.414.384-.833.384-1.253 0-.41-.123-.827-.368-1.249a3.96 3.96 0 0 0-1.154-.68ZM8.5 12.89c.347.51.886.903 1.619 1.18V12.11c-.34.14-.64.34-.894.59-.473.46-.725.948-.725 1.19Z"/>
                 <path fillRule="evenodd" d="M9.25 3.5a.75.75 0 0 1 1.5 0V4c1.147.113 2.19.667 2.888 1.538l-1.21.907A2.28 2.28 0 0 0 11 5.625V7.87a4.97 4.97 0 0 1 1.816 1.1c.59.552.934 1.207.934 1.902 0 .697-.345 1.352-.934 1.903A4.97 4.97 0 0 1 11 13.876v2.374a.75.75 0 0 1-1.5 0v-2.264c-1.188-.256-2.14-.9-2.725-1.806l1.222-.88c.378.528.955.905 1.503 1.065v-2.385a4.97 4.97 0 0 1-1.816-1.1C7.095 8.33 6.75 7.675 6.75 6.98c0-.697.345-1.352.934-1.903A4.97 4.97 0 0 1 9.25 3.876V3.5Z" clipRule="evenodd"/>

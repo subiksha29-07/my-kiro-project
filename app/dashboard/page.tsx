@@ -122,7 +122,7 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <Link
                 href="/transactions"
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
               >
                 <span className="flex items-center gap-2">
                   <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
@@ -136,7 +136,7 @@ export default function DashboardPage() {
               </Link>
               <Link
                 href="/transactions"
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
               >
                 <span className="flex items-center gap-2">
                   <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
