@@ -11,6 +11,10 @@ export interface TransactionFormProps {
   onCancel?: () => void;
   isSubmitting?: boolean;
   serverError?: string | null;
+  /** Custom income categories; falls back to built-in defaults when not provided. */
+  incomeCategories?: string[];
+  /** Custom expense categories; falls back to built-in defaults when not provided. */
+  expenseCategories?: string[];
 }
 
 const INPUT_CLASS =
@@ -39,6 +43,8 @@ export default function TransactionForm({
   onCancel,
   isSubmitting = false,
   serverError,
+  incomeCategories = [...INCOME_CATEGORIES],
+  expenseCategories = [...EXPENSE_CATEGORIES],
 }: TransactionFormProps) {
   const isEditMode = Boolean(initialValues?.updatedAt);
 
@@ -54,11 +60,11 @@ export default function TransactionForm({
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const valid = type === 'INCOME' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-    if (category && !(valid as readonly string[]).includes(category)) setCategory('');
-  }, [type, category]);
+    const valid = type === 'INCOME' ? incomeCategories : expenseCategories;
+    if (category && !valid.includes(category)) setCategory('');
+  }, [type, category, incomeCategories, expenseCategories]);
 
-  const categoryOptions = type === 'INCOME' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const categoryOptions = type === 'INCOME' ? incomeCategories : expenseCategories;
 
   function buildInput(): TransactionInput {
     const p = parseFloat(amount);

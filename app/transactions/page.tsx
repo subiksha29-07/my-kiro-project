@@ -9,11 +9,16 @@ import {
   deleteTransaction,
 } from '@/lib/transactions/manager';
 import { validateTransaction } from '@/lib/transactions/validator';
+import {
+  loadIncomeCategories,
+  loadExpenseCategories,
+} from '@/lib/categories/store';
 import type { Transaction, TransactionInput, FilterOptions } from '@/lib/transactions/types';
 import TransactionForm from '@/components/transactions/TransactionForm';
 import TransactionList from '@/components/transactions/TransactionList';
 import TransactionFilter from '@/components/transactions/TransactionFilter';
 import DeleteConfirmDialog from '@/components/transactions/DeleteConfirmDialog';
+import CategoryManager from '@/components/settings/CategoryManager';
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -25,6 +30,9 @@ export default function TransactionsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
+  const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -32,10 +40,13 @@ export default function TransactionsPage() {
     } catch {
       setLoadError('Failed to load transactions from storage.');
     }
+    setIncomeCategories(loadIncomeCategories());
+    setExpenseCategories(loadExpenseCategories());
   }, []);
 
   const displayedTransactions = getTransactions(transactions, filters);
   const isFiltered = !!(filters.type || filters.category);
+  const allCategories = Array.from(new Set([...incomeCategories, ...expenseCategories])).sort();
 
   async function handleSubmit(input: TransactionInput, expectedUpdatedAt?: string) {
     if (!validateTransaction(input).valid) return;
@@ -102,6 +113,11 @@ export default function TransactionsPage() {
     }
   }
 
+  function handleCategorySave(income: string[], expense: string[]) {
+    setIncomeCategories(income);
+    setExpenseCategories(expense);
+  }
+
   const deleteTargetTransaction = deleteTarget
     ? (transactions.find((t) => t.id === deleteTarget) ?? null)
     : null;
@@ -115,9 +131,23 @@ export default function TransactionsPage() {
             <p className="text-violet-200 text-xs font-medium uppercase tracking-wider mb-1">Manage your money</p>
             <h1 className="text-3xl font-bold">Transactions</h1>
           </div>
-          <div className="flex items-center gap-3 text-sm text-violet-200">
-            <span className="font-semibold text-white text-xl">{transactions.length}</span>
-            {transactions.length === 1 ? 'entry' : 'entries'}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-violet-200">
+              <span className="font-semibold text-white text-xl">{transactions.length}</span>{' '}
+              {transactions.length === 1 ? 'entry' : 'entries'}
+            </span>
+            {/* Manage Categories button */}
+            <button
+              type="button"
+              onClick={() => setShowCategoryManager(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-white/15 border border-white/25 px-3 py-2 text-sm font-medium text-white hover:bg-white/25 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              aria-label="Manage categories"
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+                <path fillRule="evenodd" d="M2 3.75A.75.75 0 0 1 2.75 3h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 3.75Zm0 4A.75.75 0 0 1 2.75 7h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 2 7.75Zm0 4a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 2 11.75ZM14.78 9.22a.75.75 0 0 0-1.06 0l-1.97 1.97-.47-.47a.75.75 0 0 0-1.06 1.06l1 1a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 0 0 0-1.06Z" clipRule="evenodd" />
+              </svg>
+              Categories
+            </button>
           </div>
         </div>
       </div>
@@ -136,7 +166,6 @@ export default function TransactionsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* ── Left: form panel ── */}
           <aside className="lg:col-span-2">
-            {/* Add button (collapsed state) */}
             {!showForm && (
               <button
                 type="button"
@@ -150,17 +179,11 @@ export default function TransactionsPage() {
               </button>
             )}
 
-            {/* Form panel */}
             {showForm && (
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                {/* Panel header */}
-                <div className={`px-5 py-4 border-b border-slate-100 flex items-center justify-between ${
-                  editTarget ? 'bg-amber-50' : 'bg-indigo-50'
-                }`}>
+                <div className={`px-5 py-4 border-b border-slate-100 flex items-center justify-between ${editTarget ? 'bg-amber-50' : 'bg-indigo-50'}`}>
                   <div className="flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                      editTarget ? 'bg-amber-200' : 'bg-indigo-200'
-                    }`}>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${editTarget ? 'bg-amber-200' : 'bg-indigo-200'}`}>
                       <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3.5 h-3.5 ${editTarget ? 'text-amber-700' : 'text-indigo-700'}`}>
                         {editTarget
                           ? <path d="M8.954 1.545a1.875 1.875 0 1 1 2.651 2.651L10.464 5.34 6.81 1.686l1.145-1.14ZM5.775 2.72 1.5 6.994v3.256h3.256L9.03 6.496 5.775 2.72Z" />
@@ -190,6 +213,8 @@ export default function TransactionsPage() {
                     onCancel={handleCancelEdit}
                     isSubmitting={isSubmitting}
                     serverError={serverError}
+                    incomeCategories={incomeCategories}
+                    expenseCategories={expenseCategories}
                   />
                 </div>
               </div>
@@ -198,12 +223,13 @@ export default function TransactionsPage() {
 
           {/* ── Right: list ── */}
           <div className="lg:col-span-3 space-y-4">
-            {/* Filter bar */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm px-4 py-3.5">
-              <TransactionFilter filters={filters} onChange={setFilters} />
+              <TransactionFilter
+                filters={filters}
+                onChange={setFilters}
+                allCategories={allCategories}
+              />
             </div>
-
-            {/* List */}
             <TransactionList
               transactions={displayedTransactions}
               onEdit={handleEdit}
@@ -220,6 +246,14 @@ export default function TransactionsPage() {
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
         isDeleting={isDeleting}
+      />
+
+      <CategoryManager
+        isOpen={showCategoryManager}
+        incomeCategories={incomeCategories}
+        expenseCategories={expenseCategories}
+        onClose={() => setShowCategoryManager(false)}
+        onSave={handleCategorySave}
       />
     </div>
   );

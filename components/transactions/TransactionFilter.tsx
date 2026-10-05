@@ -6,14 +6,17 @@ import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '@/lib/transactions/consta
 export interface TransactionFilterProps {
   filters: FilterOptions;
   onChange: (filters: FilterOptions) => void;
+  /** All available categories (income + expense combined). Falls back to built-in defaults. */
+  allCategories?: string[];
 }
 
-const ALL_CATEGORIES = [...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES].sort();
+const DEFAULT_CATEGORIES = [...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES].sort();
 
 const SELECT_CLASS =
   'rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all cursor-pointer';
 
-export default function TransactionFilter({ filters, onChange }: TransactionFilterProps) {
+export default function TransactionFilter({ filters, onChange, allCategories }: TransactionFilterProps) {
+  const categoryList = allCategories ?? DEFAULT_CATEGORIES;
   const hasActiveFilter = filters.type !== undefined || filters.category !== undefined;
 
   function handleTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -59,7 +62,7 @@ export default function TransactionFilter({ filters, onChange }: TransactionFilt
           aria-label="Filter by category"
         >
           <option value="">All Categories</option>
-          {ALL_CATEGORIES.map((cat) => (
+          {categoryList.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>

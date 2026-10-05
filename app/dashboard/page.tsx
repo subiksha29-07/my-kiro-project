@@ -10,7 +10,7 @@ import type { Transaction } from '@/lib/transactions/types';
 import type { FinancialSummary } from '@/lib/dashboard/calculator';
 import type { BudgetEvaluation } from '@/lib/budget/manager';
 import { BalanceSummary } from '@/components/dashboard/BalanceSummary';
-import { EmptyState } from '@/components/dashboard/EmptyState';
+import { MonthlyBreakdown } from '@/components/dashboard/MonthlyBreakdown';
 import BudgetWidget from '@/components/budget/BudgetWidget';
 
 export default function DashboardPage() {
@@ -162,7 +162,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {transactions.length === 0 && !isLoading && <EmptyState />}
+        {/* Month-wise breakdown — always shown, replaces the empty state */}
+        <MonthlyBreakdown transactions={transactions} isLoading={isLoading} />
       </div>
     </div>
   );
