@@ -6,22 +6,26 @@ A personal finance web application for tracking income and expenses, monitoring 
 
 ## Features
 
-### Transaction Management
-- Add, edit, and delete transactions with a validated form
-- Filter by type (Income / Expense) and category
-- Transactions persist across sessions via `localStorage`
-- Stale-update protection (optimistic concurrency) prevents overwriting in-flight edits
-- Delete confirmation dialog to prevent accidental removal
+### 💰 Total Income
+Shows the total amount of money received or added as income across all recorded transactions.
 
-### Dashboard & Balance
-- Real-time summary cards showing total income, total expenses, and current balance
-- Loading states during data hydration
-- Empty state with a call-to-action when no transactions exist
+### 💸 Total Expenses
+Shows the total amount spent across all recorded expense transactions.
 
-### Monthly Budget
-- Set a monthly spending budget
-- Visual progress bar that turns green → amber → red as spending increases
-- Three budget states: `WITHIN_BUDGET`, `OVER_BUDGET`, `NO_BUDGET`
+### 📈 Current Balance
+Shows the remaining balance by calculating total income minus total expenses, updated in real time.
+
+### 🎯 Monthly Budget
+Shows the spending limit set by the user for the current month, with a visual progress bar that shifts green → amber → red as spending increases.
+
+### 📅 This Month's Expenses
+Shows how much the user has spent during the current month, helping them track their spending against their budget.
+
+### 📝 Transaction Management
+Users can add, edit, delete, filter, and sort their transactions. Includes delete confirmation, stale-update protection, and localStorage persistence.
+
+### 🏷️ Category Management
+Users can add their own categories and delete categories they no longer need, giving them more flexibility to organize their transactions.
 
 ---
 
