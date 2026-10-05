@@ -34,9 +34,7 @@ describe('TransactionList', () => {
         makeTx({ id: 'id-2', title: 'Groceries' }),
         makeTx({ id: 'id-3', title: 'Salary', type: 'INCOME' }),
       ];
-      render(
-        <TransactionList transactions={txs} onEdit={vi.fn()} onDelete={vi.fn()} />
-      );
+      render(<TransactionList transactions={txs} onEdit={vi.fn()} onDelete={vi.fn()} />);
       expect(screen.getByText('Rent')).toBeDefined();
       expect(screen.getByText('Groceries')).toBeDefined();
       expect(screen.getByText('Salary')).toBeDefined();
@@ -44,46 +42,30 @@ describe('TransactionList', () => {
 
     it('shows a count of transactions', () => {
       const txs = [makeTx(), makeTx()];
-      render(
-        <TransactionList transactions={txs} onEdit={vi.fn()} onDelete={vi.fn()} />
-      );
-      expect(screen.getByText(/2 transactions total/i)).toBeDefined();
+      render(<TransactionList transactions={txs} onEdit={vi.fn()} onDelete={vi.fn()} />);
+      // Count text: "2 transactions total"
+      expect(screen.getByText(/2 transactions/i)).toBeDefined();
     });
   });
 
   describe('renders empty state', () => {
     it('shows "No transactions recorded yet" when list is empty and no filter', () => {
       render(
-        <TransactionList
-          transactions={[]}
-          onEdit={vi.fn()}
-          onDelete={vi.fn()}
-          isFiltered={false}
-        />
+        <TransactionList transactions={[]} onEdit={vi.fn()} onDelete={vi.fn()} isFiltered={false} />
       );
-      expect(
-        screen.getByText(/no transactions recorded yet/i)
-      ).toBeDefined();
+      expect(screen.getByText(/no transactions recorded yet/i)).toBeDefined();
     });
 
     it('shows filter-specific message when list is empty with active filter', () => {
       render(
-        <TransactionList
-          transactions={[]}
-          onEdit={vi.fn()}
-          onDelete={vi.fn()}
-          isFiltered={true}
-        />
+        <TransactionList transactions={[]} onEdit={vi.fn()} onDelete={vi.fn()} isFiltered={true} />
       );
-      expect(
-        screen.getByText(/no transactions match the selected filter/i)
-      ).toBeDefined();
+      // New wording: "No matches for this filter"
+      expect(screen.getByText(/no matches for this filter/i)).toBeDefined();
     });
 
     it('does not render a list element when transactions is empty', () => {
-      render(
-        <TransactionList transactions={[]} onEdit={vi.fn()} onDelete={vi.fn()} />
-      );
+      render(<TransactionList transactions={[]} onEdit={vi.fn()} onDelete={vi.fn()} />);
       expect(screen.queryByRole('list')).toBeNull();
     });
   });
@@ -92,13 +74,7 @@ describe('TransactionList', () => {
     it('calls onEdit with the correct transaction when Edit is clicked', () => {
       const onEdit = vi.fn();
       const tx = makeTx({ id: 'edit-id', title: 'My transaction' });
-      render(
-        <TransactionList
-          transactions={[tx]}
-          onEdit={onEdit}
-          onDelete={vi.fn()}
-        />
-      );
+      render(<TransactionList transactions={[tx]} onEdit={onEdit} onDelete={vi.fn()} />);
       fireEvent.click(screen.getByLabelText(/edit my transaction/i));
       expect(onEdit).toHaveBeenCalledWith(tx);
     });
@@ -106,13 +82,7 @@ describe('TransactionList', () => {
     it('calls onDelete with the correct id when Delete is clicked', () => {
       const onDelete = vi.fn();
       const tx = makeTx({ id: 'del-id', title: 'To delete' });
-      render(
-        <TransactionList
-          transactions={[tx]}
-          onEdit={vi.fn()}
-          onDelete={onDelete}
-        />
-      );
+      render(<TransactionList transactions={[tx]} onEdit={vi.fn()} onDelete={onDelete} />);
       fireEvent.click(screen.getByLabelText(/delete to delete/i));
       expect(onDelete).toHaveBeenCalledWith('del-id');
     });

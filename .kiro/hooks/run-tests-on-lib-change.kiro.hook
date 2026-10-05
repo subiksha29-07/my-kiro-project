@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Run Tests on Library Change",
+  "description": "Runs `npm run test` (vitest --run) whenever TypeScript files in lib/ or __tests__/ are modified. Ensures the full test suite stays green as business logic is developed — includes unit tests, component tests, and property-based tests.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/**/*.ts",
+      "__tests__/**/*.ts",
+      "__tests__/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm run test",
+    "timeout": 90
+  }
+}

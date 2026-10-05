@@ -1,27 +1,14 @@
 'use client';
 
-/**
- * TransactionList
- * Renders a list of TransactionItem components.
- * Displays appropriate empty states when the list is empty.
- * Does NOT fetch data or call manager/store functions.
- * The parent page provides transactions and callbacks.
- */
-
 import type { Transaction } from '@/lib/transactions/types';
 import TransactionItem from './TransactionItem';
-
-// ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface TransactionListProps {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
   onDelete: (id: string) => void;
-  /** True when a filter is active — affects the empty-state message. */
   isFiltered?: boolean;
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function TransactionList({
   transactions,
@@ -31,27 +18,21 @@ export default function TransactionList({
 }: TransactionListProps) {
   if (transactions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="text-4xl mb-3" aria-hidden="true">
-          📋
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white py-14 text-center">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+          <svg viewBox="0 0 20 20" fill="none" className="w-6 h-6">
+            <path d="M3 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4ZM3 10a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1ZM3 14a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" fill="#94a3b8" />
+          </svg>
         </div>
         {isFiltered ? (
           <>
-            <p className="text-gray-600 font-medium">
-              No transactions match the selected filter.
-            </p>
-            <p className="text-gray-400 text-sm mt-1">
-              Try clearing the filters to see all transactions.
-            </p>
+            <p className="font-semibold text-slate-700">No matches for this filter</p>
+            <p className="text-sm text-slate-400 mt-1">Try clearing the filters to see all transactions.</p>
           </>
         ) : (
           <>
-            <p className="text-gray-600 font-medium">
-              No transactions recorded yet.
-            </p>
-            <p className="text-gray-400 text-sm mt-1">
-              Add your first transaction using the form above.
-            </p>
+            <p className="font-semibold text-slate-700">No transactions recorded yet</p>
+            <p className="text-sm text-slate-400 mt-1">Use the form above to add your first entry.</p>
           </>
         )}
       </div>
@@ -60,21 +41,19 @@ export default function TransactionList({
 
   return (
     <section aria-label="Transaction list">
-      <ul className="space-y-2" role="list">
+      <div className="space-y-2">
         {transactions.map((transaction) => (
-          <li key={transaction.id}>
-            <TransactionItem
-              transaction={transaction}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          </li>
+          <TransactionItem
+            key={transaction.id}
+            transaction={transaction}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
-      </ul>
-      <p className="mt-3 text-right text-xs text-gray-400">
-        {transactions.length}{' '}
-        {transactions.length === 1 ? 'transaction' : 'transactions'}
-        {isFiltered ? ' matching filter' : ' total'}
+      </div>
+      <p className="mt-3 text-right text-xs text-slate-400">
+        {transactions.length} {transactions.length === 1 ? 'transaction' : 'transactions'}
+        {isFiltered ? ' match the filter' : ' total'}
       </p>
     </section>
   );

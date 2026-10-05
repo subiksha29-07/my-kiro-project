@@ -80,7 +80,7 @@ describe('DeleteConfirmDialog', () => {
 
     it('shows the confirmation question', () => {
       renderDialog();
-      expect(screen.getByText(/are you sure you want to delete/i)).toBeDefined();
+      expect(screen.getByText(/permanently delete this transaction/i)).toBeDefined();
     });
 
     it('displays the transaction title in the summary', () => {

@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "TypeScript Type Check on Source Change",
+  "description": "Runs `npx tsc --noEmit` whenever TypeScript source files in lib/, components/, or app/ are edited. Catches type errors early before running the full test suite, surfacing problems immediately after every save.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/**/*.ts",
+      "components/**/*.tsx",
+      "app/**/*.tsx",
+      "app/**/*.ts"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npx tsc --noEmit",
+    "timeout": 30
+  }
+}

@@ -4,7 +4,7 @@
  * submits valid data, supports edit initial values, cancel callback.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TransactionForm from '@/components/transactions/TransactionForm';
 
@@ -13,18 +13,8 @@ import TransactionForm from '@/components/transactions/TransactionForm';
 function renderForm(props: Partial<React.ComponentProps<typeof TransactionForm>> = {}) {
   const onSubmit = vi.fn();
   const onCancel = vi.fn();
-  render(
-    <TransactionForm
-      onSubmit={onSubmit}
-      onCancel={onCancel}
-      {...props}
-    />
-  );
+  render(<TransactionForm onSubmit={onSubmit} onCancel={onCancel} {...props} />);
   return { onSubmit, onCancel };
-}
-
-function getByLabelLike(text: RegExp | string) {
-  return screen.getByLabelText(text, { exact: false });
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
@@ -41,9 +31,11 @@ describe('TransactionForm', () => {
       expect(screen.getByLabelText(/amount/i)).toBeDefined();
     });
 
-    it('renders a Type select', () => {
+    it('renders Income and Expense type buttons', () => {
       renderForm();
-      expect(screen.getByLabelText(/type/i)).toBeDefined();
+      // Type is now a pill toggle — two buttons
+      expect(screen.getByRole('button', { name: /income/i })).toBeDefined();
+      expect(screen.getByRole('button', { name: /expense/i })).toBeDefined();
     });
 
     it('renders a Category select', () => {
@@ -75,7 +67,6 @@ describe('TransactionForm', () => {
   describe('displays validation errors', () => {
     it('shows an error when title is empty and form is submitted', async () => {
       renderForm();
-      // Clear title (it defaults to empty already) and submit
       fireEvent.submit(screen.getByRole('form', { hidden: true }));
       await waitFor(() => {
         expect(screen.getByText(/title is required/i)).toBeDefined();
@@ -84,12 +75,8 @@ describe('TransactionForm', () => {
 
     it('shows an error when amount is zero and form is submitted', async () => {
       const { onSubmit } = renderForm();
-      fireEvent.change(screen.getByLabelText(/title/i), {
-        target: { value: 'Test' },
-      });
-      fireEvent.change(screen.getByLabelText(/amount/i), {
-        target: { value: '0' },
-      });
+      fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Test' } });
+      fireEvent.change(screen.getByLabelText(/amount/i), { target: { value: '0' } });
       fireEvent.submit(screen.getByRole('form', { hidden: true }));
       await waitFor(() => {
         expect(screen.getByText(/greater than zero/i)).toBeDefined();
@@ -99,12 +86,8 @@ describe('TransactionForm', () => {
 
     it('shows an error when category is not selected', async () => {
       renderForm();
-      fireEvent.change(screen.getByLabelText(/title/i), {
-        target: { value: 'Test' },
-      });
-      fireEvent.change(screen.getByLabelText(/amount/i), {
-        target: { value: '10' },
-      });
+      fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Test' } });
+      fireEvent.change(screen.getByLabelText(/amount/i), { target: { value: '10' } });
       fireEvent.submit(screen.getByRole('form', { hidden: true }));
       await waitFor(() => {
         expect(screen.getByText(/category is required/i)).toBeDefined();
@@ -122,23 +105,17 @@ describe('TransactionForm', () => {
     it('calls onSubmit with correct TransactionInput on valid submission', async () => {
       const { onSubmit } = renderForm();
 
-      fireEvent.change(screen.getByLabelText(/title/i), {
-        target: { value: 'Salary' },
-      });
-      fireEvent.change(screen.getByLabelText(/amount/i), {
-        target: { value: '3000' },
-      });
-      // Type defaults to EXPENSE, switch to INCOME
-      fireEvent.change(screen.getByLabelText(/type/i), {
-        target: { value: 'INCOME' },
-      });
+      fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'Salary' } });
+      fireEvent.change(screen.getByLabelText(/amount/i), { target: { value: '3000' } });
+
+      // Type is now a button group — click the Income button
+      fireEvent.click(screen.getByRole('button', { name: /income/i }));
+
       // Category select should now show income categories
       const categorySelect = screen.getByLabelText(/category/i);
       fireEvent.change(categorySelect, { target: { value: 'Salary' } });
 
-      fireEvent.change(screen.getByLabelText(/date/i), {
-        target: { value: '2024-07-01' },
-      });
+      fireEvent.change(screen.getByLabelText(/date/i), { target: { value: '2024-07-01' } });
 
       fireEvent.submit(screen.getByRole('form', { hidden: true }));
 
@@ -176,16 +153,9 @@ describe('TransactionForm', () => {
           updatedAt: '2024-05-10T10:00:00.000Z',
         },
       });
-
-      expect((screen.getByLabelText(/title/i) as HTMLInputElement).value).toBe(
-        'Grocery run'
-      );
-      expect(
-        (screen.getByLabelText(/amount/i) as HTMLInputElement).value
-      ).toBe('55.5');
-      expect(
-        (screen.getByLabelText(/date/i) as HTMLInputElement).value
-      ).toBe('2024-05-10');
+      expect((screen.getByLabelText(/title/i) as HTMLInputElement).value).toBe('Grocery run');
+      expect((screen.getByLabelText(/amount/i) as HTMLInputElement).value).toBe('55.5');
+      expect((screen.getByLabelText(/date/i) as HTMLInputElement).value).toBe('2024-05-10');
     });
 
     it('renders "Save Changes" button in edit mode', () => {
@@ -214,13 +184,10 @@ describe('TransactionForm', () => {
           updatedAt: expectedUpdatedAt,
         },
       });
-
       fireEvent.submit(screen.getByRole('form', { hidden: true }));
-
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledOnce();
       });
-
       const [, passedUpdatedAt] = onSubmit.mock.calls[0];
       expect(passedUpdatedAt).toBe(expectedUpdatedAt);
     });
