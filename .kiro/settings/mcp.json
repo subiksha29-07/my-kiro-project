@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "d:\\AWS project\\KiroUniversity\\my-kiro-project"
+      ],
+      "description": "Local filesystem MCP server. Provides read/write access to the Smart Expense Tracker project directory. Use it to read source files, inspect test output, and navigate the project structure during development and code review sessions.",
+      "env": {}
+    }
+  }
+}
