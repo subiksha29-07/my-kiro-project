@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Link from 'next/link';
+import { AuthButtons } from '@/components/auth/AuthButtons';
 import './globals.css';
 
 const geistSans = localFont({
@@ -64,6 +65,10 @@ export default function RootLayout({
                 </svg>
                 Transactions
               </Link>
+              {/* Auth buttons — Sign In + Register */}
+              <span className="ml-2 hidden sm:flex">
+                <AuthButtons variant="nav" />
+              </span>
             </nav>
           </div>
         </header>

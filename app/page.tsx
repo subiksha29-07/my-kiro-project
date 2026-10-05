@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AuthButtons } from '@/components/auth/AuthButtons';
 
 export default function LandingPage() {
   return (
@@ -44,27 +45,17 @@ export default function LandingPage() {
                 fast dashboard.
               </p>
 
-              {/* CTAs — matches reference button style exactly */}
+              {/* CTAs */}
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
-                >
-                  View Dashboard
-                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden>
-                    <path fillRule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clipRule="evenodd" />
-                  </svg>
-                </Link>
-                <Link
-                  href="/transactions"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:border-violet-300 hover:text-violet-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
-                >
-                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4" aria-hidden>
-                    <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-                  </svg>
-                  Add Transaction
-                </Link>
+                <AuthButtons variant="hero" />
               </div>
+              {/* Secondary link */}
+              <p className="mt-4 text-xs text-slate-400">
+                Or{' '}
+                <Link href="/dashboard" className="text-violet-600 font-semibold hover:underline">
+                  skip to dashboard →
+                </Link>
+              </p>
             </div>
 
             {/* ── RIGHT: Dashboard mockup SVG (looks like a laptop photo) ── */}
@@ -369,7 +360,7 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '22px 22px' }} aria-hidden/>
         <div className="relative mx-auto max-w-xl">
           <h2 className="text-2xl sm:text-3xl font-bold">Ready to start tracking?</h2>
-          <p className="mt-2 text-violet-100 text-sm sm:text-base">No setup. No sign-up. Just open and go.</p>
+          <p className="mt-2 text-violet-100 text-sm sm:text-base">No setup. No sign-up required. Just open and go.</p>
           <Link
             href="/dashboard"
             className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-violet-700 shadow hover:bg-violet-50 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-violet-600"
