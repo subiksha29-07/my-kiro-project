@@ -1,31 +1,106 @@
 # Smart Expense Tracker
 
-A personal finance web application for tracking income and expenses, monitoring account balance, and managing a monthly budget. Built with Next.js 14, TypeScript, and Tailwind CSS — no backend required.
+> A modern personal finance web app for tracking income, expenses, balance, and monthly budgets — built with Next.js 14, TypeScript, and Tailwind CSS. No backend, no sign-up, no setup required.
+
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-1-6e9f18?logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/tests-240%20passing-brightgreen)](#testing)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Architecture](#architecture)
+- [Technologies](#technologies)
+- [Getting Started](#getting-started)
+- [Testing](#testing)
+- [Property-Based Testing](#property-based-testing)
+- [Kiro Workflow](#kiro-workflow)
+- [Demo Flow](#demo-flow)
+- [localStorage Keys](#localstorage-keys)
+- [Project Structure Notes](#project-structure-notes)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Overview
+
+Smart Expense Tracker is a fully client-side personal finance application. Every dollar you earn or spend gets recorded, categorised, and reflected instantly across your dashboard — total income, total expenses, current balance, and monthly budget progress all update in real time.
+
+There is no server, no database, and no account to create. All data lives in your browser's `localStorage` and stays private to your device.
+
+The project was built as a Kiro University showcase, demonstrating spec-driven development, property-based testing, AI steering documents, automation hooks, and custom agents — all within a single Next.js application.
+
+---
+
+## Screenshots
+
+| Landing Page | Dashboard | Transactions |
+|---|---|---|
+| Hero with dark photo background | Real-time summary cards + budget widget | CRUD list with filters |
+
+> Run the app locally (`npm run dev`) to see the full UI.
 
 ---
 
 ## Features
 
 ### 💰 Total Income
-Shows the total amount of money received or added as income across all recorded transactions.
+Shows the total amount of money received or added as income across all recorded transactions. Updates instantly whenever a new income transaction is added or edited.
 
 ### 💸 Total Expenses
-Shows the total amount spent across all recorded expense transactions.
+Shows the total amount spent across all recorded expense transactions. Aggregates every expense entry regardless of category or date.
 
 ### 📈 Current Balance
-Shows the remaining balance by calculating total income minus total expenses, updated in real time.
+Shows the remaining balance by calculating total income minus total expenses, updated in real time. Displays negative balances in red with the Unicode minus sign.
 
 ### 🎯 Monthly Budget
-Shows the spending limit set by the user for the current month, with a visual progress bar that shifts green → amber → red as spending increases.
+Shows the spending limit set by the user for the current month, with a visual progress bar that shifts green → amber → red as spending increases. Supports three states: `WITHIN_BUDGET`, `APPROACHING_BUDGET`, and `OVER_BUDGET`.
 
 ### 📅 This Month's Expenses
-Shows how much the user has spent during the current month, helping them track their spending against their budget.
+Shows how much the user has spent during the current month, helping them track their spending against their budget. Only counts expense transactions whose date falls within the current calendar month.
 
 ### 📝 Transaction Management
-Users can add, edit, delete, filter, and sort their transactions. Includes delete confirmation, stale-update protection, and localStorage persistence.
+Users can add, edit, delete, filter, and sort their transactions. Includes:
+- Validated form with type, category, amount, description, and date fields
+- Filter by type (Income / Expense) and category
+- Sort by date (newest first)
+- Delete confirmation dialog to prevent accidental removal
+- Stale-update protection (optimistic concurrency) that prevents silent overwrites
+- Full persistence via `localStorage` — data survives page refreshes and browser restarts
 
 ### 🏷️ Category Management
-Users can add their own categories and delete categories they no longer need, giving them more flexibility to organize their transactions.
+Users can add their own custom categories and delete categories they no longer need, giving them full flexibility to organise their transactions beyond the built-in defaults.
+
+### 🔒 Privacy First
+No account, no server, no tracking. All data is stored exclusively in the user's own browser via `localStorage`. Clearing browser data removes all records — nothing is sent anywhere.
+
+### ⚡ Instant Updates
+Every change — adding a transaction, editing an amount, deleting a record, or updating the budget — immediately recalculates and re-renders all summary cards and the budget progress bar without any page reload.
+
+---
+
+## How It Works
+
+```
+User Action → Component → lib/manager → lib/store (localStorage) → Component re-renders
+```
+
+1. The user interacts with a React component (e.g., submits `TransactionForm`).
+2. The component calls a pure function in `lib/*/manager.ts` (e.g., `addTransaction`).
+3. The manager validates the input, applies the business logic, and returns the updated state.
+4. The component calls `lib/*/store.ts` to persist the new state to `localStorage`.
+5. React state updates trigger a re-render, and all dependent components (summary cards, budget bar) reflect the new data instantly.
+
+All business logic lives in pure TypeScript functions with zero React dependencies — making them fully testable without a DOM.
 
 ---
 
@@ -35,13 +110,21 @@ Users can add their own categories and delete categories they no longer need, gi
 smart-expense-tracker/
 ├── app/
 │   ├── layout.tsx                   # Root layout with sticky navbar
-│   ├── page.tsx                     # Dashboard (home page)
-│   └── transactions/
-│       └── page.tsx                 # Transactions CRUD page
+│   ├── page.tsx                     # Landing page
+│   └── (app)/
+│       ├── layout.tsx               # App shell layout
+│       ├── dashboard/
+│       │   └── page.tsx             # Dashboard page
+│       └── transactions/
+│           └── page.tsx             # Transactions CRUD page
 ├── components/
+│   ├── auth/
+│   │   ├── AuthModal.tsx            # Login / register modal
+│   │   └── AuthButtons.tsx          # Sign in / out buttons
 │   ├── dashboard/
 │   │   ├── SummaryCard.tsx          # Individual metric card
 │   │   ├── BalanceSummary.tsx       # Grid of 3 summary cards
+│   │   ├── MonthlyBreakdown.tsx     # Monthly expense breakdown
 │   │   └── EmptyState.tsx           # CTA when no transactions exist
 │   ├── transactions/
 │   │   ├── TransactionForm.tsx      # Add/edit form with validation
@@ -49,10 +132,14 @@ smart-expense-tracker/
 │   │   ├── TransactionItem.tsx      # Individual transaction row
 │   │   ├── TransactionFilter.tsx    # Type + category filter dropdowns
 │   │   └── DeleteConfirmDialog.tsx  # Confirmation modal
-│   └── budget/
-│       ├── BudgetWidget.tsx         # Complete budget status display
-│       ├── BudgetForm.tsx           # Budget input form
-│       └── BudgetProgressBar.tsx    # Visual progress indicator
+│   ├── budget/
+│   │   ├── BudgetWidget.tsx         # Complete budget status display
+│   │   ├── BudgetForm.tsx           # Budget input form
+│   │   └── BudgetProgressBar.tsx    # Visual progress indicator
+│   ├── settings/
+│   │   └── CategoryManager.tsx      # Add/delete custom categories
+│   └── layout/
+│       └── Sidebar.tsx              # App navigation sidebar
 ├── lib/
 │   ├── transactions/
 │   │   ├── types.ts                 # Shared TypeScript interfaces
@@ -65,6 +152,8 @@ smart-expense-tracker/
 │   ├── budget/
 │   │   ├── manager.ts               # evaluateBudget, computeMonthlyExpenses
 │   │   └── store.ts                 # localStorage persistence for budget
+│   ├── categories/
+│   │   └── store.ts                 # localStorage persistence for categories
 │   └── utils/
 │       └── currency.ts              # formatCurrency utility
 ├── __tests__/
@@ -96,19 +185,25 @@ app/* → components/* → lib/*
 
 ## Technologies
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 3 |
-| Testing | Vitest 1 + @testing-library/react |
-| Property testing | fast-check 4 |
-| Persistence | Browser `localStorage` |
-| Runtime | Node.js (no backend / no database) |
+| Layer | Technology | Purpose |
+|---|---|---|
+| Framework | Next.js 14 (App Router) | Routing, SSR, file-based pages |
+| Language | TypeScript 5 | Type safety across all layers |
+| Styling | Tailwind CSS 3 | Utility-first responsive design |
+| Testing | Vitest 1 + @testing-library/react | Unit, component, and integration tests |
+| Property testing | fast-check 4 | Mathematical invariant verification |
+| Persistence | Browser `localStorage` | Zero-backend data storage |
+| Runtime | Node.js | Dev server and build tooling |
+| Fonts | Geist (Vercel) | Clean sans-serif and mono typography |
 
 ---
 
 ## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or later
+- npm 9 or later
 
 ### Install dependencies
 
@@ -128,6 +223,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```bash
 npm run build
+npm start
+```
+
+### Lint
+
+```bash
+npm run lint
 ```
 
 ---
@@ -240,28 +342,31 @@ This project was built using Kiro's spec-driven, AI-assisted workflow. The `.kir
 
 ## Demo Flow
 
-Follow these steps to explore all three features end to end.
+Follow these steps to explore all features end to end.
 
 1. **Start the app** — run `npm run dev` and open [http://localhost:3000](http://localhost:3000)
-2. **Empty state** — the dashboard shows the empty state CTA because there are no transactions yet
-3. **Add income** — navigate to Transactions → click "Add Transaction" → set type to Income, category Salary, enter an amount and date → save
-4. **Add expenses** — add two or three Expense transactions (e.g., Food, Transport) with different dates
-5. **Check the dashboard** — go back to the home page; the three summary cards now show total income, total expenses, and balance
-6. **Filter transactions** — on the Transactions page, use the Type and Category dropdowns to filter the list
-7. **Edit a transaction** — click the edit icon on any row, change the amount, and save; observe the dashboard balance update
-8. **Set a budget** — on the dashboard, find the Budget widget and set a monthly budget
-9. **Watch the progress bar** — add more expenses for the current month; the bar moves green → amber → red as you approach or exceed the budget
-10. **Delete a transaction** — click the delete icon, confirm in the dialog; the summaries and budget update instantly
-11. **Reload the page** — all data persists because it is stored in `localStorage`
+2. **Landing page** — explore the hero section with feature highlights and quick-action links
+3. **Empty state** — navigate to the dashboard; it shows an empty state CTA because no transactions exist yet
+4. **Add income** — go to Transactions → click "Add Transaction" → set type to Income, category Salary, enter an amount and date → save
+5. **Add expenses** — add two or three Expense transactions (e.g., Food, Transport) with different amounts and dates
+6. **Check the dashboard** — return to the dashboard; the three summary cards now show total income, total expenses, and current balance
+7. **Set a budget** — in the Budget widget, set a monthly spending limit (e.g., $5,000)
+8. **Watch the progress bar** — add more expense transactions for the current month; the bar moves green → amber → red as you approach or exceed the limit
+9. **Filter transactions** — on the Transactions page, use the Type and Category dropdowns to filter the list
+10. **Edit a transaction** — click the edit icon on any row, change the amount, and save; the dashboard updates instantly
+11. **Add a custom category** — use the Category Manager to add a category like "Side Project Income" or "Gym"
+12. **Delete a transaction** — click the delete icon, confirm in the dialog; all summaries and the budget bar update immediately
+13. **Reload the page** — all data persists because it is stored in `localStorage`
 
 ---
 
 ## localStorage Keys
 
-| Key | Purpose |
-|---|---|
-| `smart-expense-tracker-transactions` | All transactions as a JSON array |
-| `smart-expense-tracker-budget` | Monthly budget as a numeric string |
+| Key | Purpose | Format |
+|---|---|---|
+| `smart-expense-tracker-transactions` | All transactions | JSON array of `Transaction` objects |
+| `smart-expense-tracker-budget` | Monthly budget amount | Numeric string (e.g., `"5000"`) |
+| `smart-expense-tracker-categories` | Custom user categories | JSON array of category name strings |
 
 ---
 
@@ -271,3 +376,28 @@ Follow these steps to explore all three features end to end.
 - All components use `'use client'` and load/save exclusively through `lib/*/store.ts`
 - `__tests__/` mirrors the `lib/` structure; test files live alongside their logical counterpart, not inside `lib/`
 - Currency amounts are always displayed in USD with exactly 2 decimal places (`$1,234.56`); negative balances use the Unicode minus sign (`−$123.45`), not an ASCII hyphen
+- The app is fully responsive — layout adapts from mobile (single-column) to desktop (sidebar + main content)
+- All interactive elements include keyboard navigation and ARIA attributes for accessibility
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes following the coding conventions in `.kiro/steering/`
+4. Run tests: `npm run test`
+5. Run type check: `npx tsc --noEmit`
+6. Commit your changes: `git commit -m 'feat: add my feature'`
+7. Push to the branch: `git push origin feature/my-feature`
+8. Open a pull request
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+> Built with ❤️ using [Kiro](https://kiro.dev) — the AI-powered development environment.
