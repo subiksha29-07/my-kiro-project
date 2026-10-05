@@ -123,7 +123,7 @@ export default function TransactionsPage() {
     : null;
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Page header */}
       <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white">
         <div className="mx-auto max-w-5xl px-6 py-8 flex items-end justify-between">
