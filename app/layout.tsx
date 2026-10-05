@@ -64,12 +64,6 @@ export default function RootLayout({
                 </svg>
                 Transactions
               </Link>
-              <Link
-                href="/dashboard"
-                className="ml-2 hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
-              >
-                Get Started
-              </Link>
             </nav>
           </div>
         </header>
