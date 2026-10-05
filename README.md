@@ -43,11 +43,25 @@ The project was built as a Kiro University showcase, demonstrating spec-driven d
 
 ## Screenshots
 
-| Landing Page | Dashboard | Transactions |
-|---|---|---|
-| Hero with dark photo background | Real-time summary cards + budget widget | CRUD list with filters |
+### Dashboard
+![Dashboard — summary cards, monthly budget widget, charts](public/screenshots/dashboard.png)
 
-> Run the app locally (`npm run dev`) to see the full UI.
+*Real-time summary cards showing Total Income ($700), Total Expenses ($600), and Current Balance ($100). Budget progress bar, Expenses by Category donut chart, and Monthly Trends bar chart.*
+
+### Transaction List
+![Transaction list with 3 entries](public/screenshots/transaction-list.png)
+
+*All transactions listed newest-first with type indicator, category badge, date, and amount. Filter dropdowns for Type and Category at the top.*
+
+### Add Transaction Form
+![Add Transaction form — Income type selected](public/screenshots/add-transaction.png)
+
+*Slide-in form for adding a new transaction. Supports Expense and Income types, custom amount, date, title, category, and optional description.*
+
+### Category Manager
+![Expense Categories modal](public/screenshots/category-manager.png)
+
+*Category Manager modal for adding and managing custom expense and income categories. Changes apply instantly to the transaction form and filter dropdowns.*
 
 ---
 
