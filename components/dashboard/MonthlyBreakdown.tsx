@@ -7,16 +7,16 @@ interface MonthlyBreakdownProps {
   isLoading?: boolean;
 }
 
-// ─── Palette (violet shades, matches app theme) ──────────────────────────────
+// ─── Palette ──────────────────────────────────────────────────────────────────
 const PALETTE = [
-  '#7C3AED', // violet-600
-  '#A78BFA', // violet-400
-  '#6D28D9', // violet-700
-  '#C4B5FD', // violet-300
-  '#5B21B6', // violet-800
-  '#DDD6FE', // violet-200
-  '#8B5CF6', // violet-500
-  '#EDE9FE', // violet-100
+  '#7C3AED',
+  '#A78BFA',
+  '#6D28D9',
+  '#C4B5FD',
+  '#5B21B6',
+  '#DDD6FE',
+  '#8B5CF6',
+  '#EDE9FE',
 ];
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ interface CategorySlice {
 }
 
 interface MonthBar {
-  label: string;  // e.g. "Oct 26"
+  label: string;
   expenses: number;
 }
 
@@ -56,7 +56,6 @@ function buildMonthBars(transactions: Transaction[]): MonthBar[] {
       map.set(ym, (map.get(ym) ?? 0) + t.amount);
     }
   }
-  // Last 6 months ascending
   const sorted = Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? -1 : 1));
   const last6 = sorted.slice(-6);
   return last6.map(([ym, expenses]) => {
@@ -70,109 +69,102 @@ function buildMonthBars(transactions: Transaction[]): MonthBar[] {
   });
 }
 
-// ─── Donut chart (SVG) ────────────────────────────────────────────────────────
+// ─── Donut chart ──────────────────────────────────────────────────────────────
+// Uses strokeDasharray/strokeDashoffset on a circle — much more reliable than arc paths.
 
 function DonutChart({ slices }: { slices: CategorySlice[] }) {
-  const cx = 80;
-  const cy = 80;
-  const R = 60;   // outer radius
-  const r = 38;   // inner radius (hole)
+  const size = 160;
+  const cx = size / 2;
+  const cy = size / 2;
+  const R = 58;          // radius of stroke centre
+  const strokeW = 28;    // ring thickness
+  const circumference = 2 * Math.PI * R;
   const total = slices.reduce((s, c) => s + c.total, 0);
+  const GAP_DEG = slices.length > 1 ? 3 : 0;
+  const gap = (GAP_DEG / 360) * circumference;
 
-  if (slices.length === 0 || total === 0) {
-    // Empty ring
+  if (total === 0) {
     return (
-      <svg viewBox="0 0 160 160" className="w-36 h-36 shrink-0">
-        <circle cx={cx} cy={cy} r={R} fill="none" stroke="#2D3748" strokeWidth={R - r} />
+      <svg viewBox={`0 0 ${size} ${size}`} className="w-40 h-40 shrink-0" aria-hidden>
+        <circle cx={cx} cy={cy} r={R} fill="none" stroke="#E9D5FF" strokeWidth={strokeW} />
       </svg>
     );
   }
 
-  // Build arc paths
-  let angle = -Math.PI / 2; // start at top
-  const paths: { d: string; color: string }[] = [];
+  // Build segments using stroke-dasharray trick, rotated to start at top (-90°)
+  let offset = 0;
+  const segments: { dashArray: string; dashOffset: number; color: string; rotation: number }[] = [];
 
   for (const slice of slices) {
-    const sweep = (slice.total / total) * 2 * Math.PI;
-    // Gap between slices
-    const gap = slices.length > 1 ? 0.03 : 0;
-    const startAngle = angle + gap / 2;
-    const endAngle = angle + sweep - gap / 2;
-
-    const x1 = cx + R * Math.cos(startAngle);
-    const y1 = cy + R * Math.sin(startAngle);
-    const x2 = cx + R * Math.cos(endAngle);
-    const y2 = cy + R * Math.sin(endAngle);
-    const x3 = cx + r * Math.cos(endAngle);
-    const y3 = cy + r * Math.sin(endAngle);
-    const x4 = cx + r * Math.cos(startAngle);
-    const y4 = cy + r * Math.sin(startAngle);
-
-    const largeArc = sweep - gap >= Math.PI ? 1 : 0;
-
-    const d = [
-      `M ${x1} ${y1}`,
-      `A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2}`,
-      `L ${x3} ${y3}`,
-      `A ${r} ${r} 0 ${largeArc} 0 ${x4} ${y4}`,
-      'Z',
-    ].join(' ');
-
-    paths.push({ d, color: slice.color });
-    angle += sweep;
+    const segLen = (slice.total / total) * circumference - gap;
+    const rotation = (offset / circumference) * 360 - 90;
+    segments.push({
+      dashArray: `${Math.max(segLen, 0)} ${circumference}`,
+      dashOffset: 0,
+      color: slice.color,
+      rotation,
+    });
+    offset += (slice.total / total) * circumference;
   }
 
   return (
-    <svg viewBox="0 0 160 160" className="w-36 h-36 shrink-0">
-      {paths.map((p, i) => (
-        <path key={i} d={p.d} fill={p.color} />
+    <svg viewBox={`0 0 ${size} ${size}`} className="w-40 h-40 shrink-0" aria-hidden>
+      {segments.map((seg, i) => (
+        <circle
+          key={i}
+          cx={cx}
+          cy={cy}
+          r={R}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth={strokeW}
+          strokeDasharray={seg.dashArray}
+          strokeDashoffset={seg.dashOffset}
+          strokeLinecap="butt"
+          transform={`rotate(${seg.rotation} ${cx} ${cy})`}
+        />
       ))}
     </svg>
   );
 }
 
-// ─── Bar chart (SVG) ──────────────────────────────────────────────────────────
+// ─── Bar chart ────────────────────────────────────────────────────────────────
 
 function BarChart({ bars }: { bars: MonthBar[] }) {
-  const W = 320;
+  const W = 300;
   const H = 180;
-  const padL = 36;
-  const padB = 28;
-  const padT = 12;
+  const padL = 38;
+  const padB = 30;
+  const padT = 10;
   const padR = 8;
   const chartW = W - padL - padR;
   const chartH = H - padB - padT;
 
   const maxVal = Math.max(...bars.map((b) => b.expenses), 1);
-
-  // Y-axis gridlines
   const steps = 5;
-  const stepVal = maxVal / steps;
-  const yLines = Array.from({ length: steps + 1 }, (_, i) => i * stepVal);
-
-  const barCount = bars.length || 6;
-  const barW = Math.max(16, (chartW / barCount) * 0.5);
-  const gap = chartW / barCount;
+  const yLines = Array.from({ length: steps + 1 }, (_, i) => (i * maxVal) / steps);
+  const gap = chartW / (bars.length || 1);
+  const barW = Math.max(12, gap * 0.55);
 
   function yPos(val: number) {
     return padT + chartH - (val / maxVal) * chartH;
   }
 
-  function formatLabel(n: number): string {
+  function fmtY(n: number): string {
     if (n >= 1000) return `${(n / 1000).toFixed(0)}k`;
     return String(Math.round(n));
   }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full">
-      {/* Grid lines */}
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full" aria-hidden>
+      {/* Gridlines */}
       {yLines.map((v, i) => {
         const y = yPos(v);
         return (
           <g key={i}>
-            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#2D3748" strokeWidth="1" />
-            <text x={padL - 4} y={y + 3.5} textAnchor="end" fontSize="8" fill="#718096">
-              {formatLabel(v)}
+            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#E9D5FF" strokeWidth="0.75" strokeDasharray={i === 0 ? '0' : '3 3'} />
+            <text x={padL - 4} y={y + 3.5} textAnchor="end" fontSize="8" fill="#9CA3AF">
+              {fmtY(v)}
             </text>
           </g>
         );
@@ -181,27 +173,20 @@ function BarChart({ bars }: { bars: MonthBar[] }) {
       {/* Bars */}
       {bars.map((b, i) => {
         const x = padL + i * gap + gap / 2 - barW / 2;
-        const barH = (b.expenses / maxVal) * chartH;
-        const y = padT + chartH - barH;
+        const bH = Math.max((b.expenses / maxVal) * chartH, 2);
+        const y = padT + chartH - bH;
         return (
           <g key={i}>
-            <rect x={x} y={y} width={barW} height={barH} rx="3" fill="#7C3AED" />
-            {/* X label */}
-            <text
-              x={x + barW / 2}
-              y={H - padB + 14}
-              textAnchor="middle"
-              fontSize="8.5"
-              fill="#A0AEC0"
-            >
+            <rect x={x} y={y} width={barW} height={bH} rx="4" fill="#7C3AED" />
+            <text x={x + barW / 2} y={H - padB + 14} textAnchor="middle" fontSize="8" fill="#6B7280">
               {b.label}
             </text>
           </g>
         );
       })}
 
-      {/* Bottom axis line */}
-      <line x1={padL} y1={padT + chartH} x2={W - padR} y2={padT + chartH} stroke="#2D3748" strokeWidth="1" />
+      {/* Axis baseline */}
+      <line x1={padL} y1={padT + chartH} x2={W - padR} y2={padT + chartH} stroke="#D1D5DB" strokeWidth="1" />
     </svg>
   );
 }
@@ -210,20 +195,18 @@ function BarChart({ bars }: { bars: MonthBar[] }) {
 
 export function MonthlyBreakdown({ transactions, isLoading = false }: MonthlyBreakdownProps) {
   const slices = buildCategorySlices(transactions);
-  const bars = buildMonthBars(transactions);
-  const hasExpenses = slices.length > 0;
+  const bars   = buildMonthBars(transactions);
 
-  // Card base style — dark navy, matching reference
-  const card = 'rounded-2xl bg-[#0F172A] border border-[#1E293B] p-5 flex flex-col gap-4';
-  const title = 'flex items-center gap-2 text-sm font-semibold text-white';
+  // White card style — matches the rest of the dashboard
+  const card = 'rounded-2xl bg-white border border-slate-200 shadow-sm p-5 flex flex-col gap-4';
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[0, 1].map((i) => (
-          <div key={i} className={`${card} min-h-[200px]`}>
-            <div className="h-4 w-40 bg-slate-700 rounded animate-pulse" />
-            <div className="flex-1 bg-slate-800 rounded-xl animate-pulse" />
+          <div key={i} className={`${card} min-h-[220px]`}>
+            <div className="h-4 w-44 bg-slate-100 rounded animate-pulse" />
+            <div className="flex-1 bg-slate-50 rounded-xl animate-pulse" />
           </div>
         ))}
       </div>
@@ -232,42 +215,45 @@ export function MonthlyBreakdown({ transactions, isLoading = false }: MonthlyBre
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
       {/* ── Expenses by Category ── */}
       <div className={card}>
-        <div className={title}>
-          {/* donut icon */}
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-violet-400" aria-hidden>
-            <path fillRule="evenodd" d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" clipRule="evenodd" />
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-violet-600 shrink-0" aria-hidden>
+            <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm-.75-4.75a.75.75 0 0 0 1.5 0V8.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L6.2 9.74a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clipRule="evenodd" />
           </svg>
-          Expenses by Category
+          <h3 className="text-sm font-semibold text-slate-800">Expenses by Category</h3>
         </div>
 
-        {!hasExpenses ? (
-          <div className="flex-1 flex flex-col items-center justify-center py-6 gap-2">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-slate-500">
+        {slices.length === 0 ? (
+          /* Empty state */
+          <div className="flex-1 flex flex-col items-center justify-center py-8 gap-2">
+            <div className="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-violet-300">
                 <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v4.5a.75.75 0 0 0 1.5 0v-4.5Zm0 7a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-xs text-slate-400">No expense data yet</p>
+            <p className="text-sm text-slate-500 font-medium">No expense data yet</p>
+            <p className="text-xs text-slate-400">Add expense transactions to see the chart.</p>
           </div>
         ) : (
-          <div className="flex items-center gap-5">
+          /* Donut + legend */
+          <div className="flex items-center gap-6">
             <DonutChart slices={slices} />
-            {/* Legend */}
-            <ul className="flex flex-col gap-2 min-w-0">
-              {slices.slice(0, 6).map((s) => (
-                <li key={s.category} className="flex items-center gap-2 min-w-0">
+            <ul className="flex flex-col gap-2.5 min-w-0 flex-1">
+              {slices.slice(0, 7).map((s) => (
+                <li key={s.category} className="flex items-center gap-2.5 min-w-0">
                   <span
-                    className="w-2.5 h-2.5 rounded-sm shrink-0"
+                    className="w-8 h-3.5 rounded shrink-0"
                     style={{ background: s.color }}
                     aria-hidden
                   />
-                  <span className="text-xs text-slate-300 truncate">{s.category}</span>
+                  <span className="text-xs text-slate-600 truncate font-medium">{s.category}</span>
                 </li>
               ))}
-              {slices.length > 6 && (
-                <li className="text-xs text-slate-500">+{slices.length - 6} more</li>
+              {slices.length > 7 && (
+                <li className="text-xs text-slate-400">+{slices.length - 7} more</li>
               )}
             </ul>
           </div>
@@ -276,29 +262,33 @@ export function MonthlyBreakdown({ transactions, isLoading = false }: MonthlyBre
 
       {/* ── Monthly Trends ── */}
       <div className={card}>
-        <div className={title}>
-          {/* bar chart icon */}
-          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-violet-400" aria-hidden>
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-violet-600 shrink-0" aria-hidden>
             <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3ZM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7ZM11 3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3Z" />
           </svg>
-          Monthly Trends
+          <h3 className="text-sm font-semibold text-slate-800">Monthly Trends</h3>
         </div>
 
         {bars.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center py-6 gap-2">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-slate-500">
+          /* Empty state */
+          <div className="flex-1 flex flex-col items-center justify-center py-8 gap-2">
+            <div className="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-violet-300">
                 <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v4.5a.75.75 0 0 0 1.5 0v-4.5Zm0 7a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-xs text-slate-400">No trend data yet</p>
+            <p className="text-sm text-slate-500 font-medium">No trend data yet</p>
+            <p className="text-xs text-slate-400">Add expense transactions to see monthly trends.</p>
           </div>
         ) : (
-          <div className="flex-1 h-44">
+          /* Bar chart */
+          <div className="flex-1 h-48">
             <BarChart bars={bars} />
           </div>
         )}
       </div>
+
     </div>
   );
 }
