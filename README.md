@@ -104,3 +104,40 @@ A user-defined spending limit for the current month. Stored in `localStorage`. T
 
 ### 📅 This Month's Expenses
 Computed by `computeMonthlyExpenses()` in `lib/budget/manager.ts`. Only counts `EXPENSE` transactions whose `date` field falls within the current calendar month (`YYYY-MM` prefix match). This value drives the budget progress bar.
+
+---
+
+## Transaction Management
+
+Transactions are managed on the Transactions page (`app/(app)/transactions/page.tsx`) and through the components in `components/transactions/`.
+
+### Adding a Transaction
+Click **+ Add Transaction** to open the form (`TransactionForm.tsx`). Required fields:
+- **Type** — `Income` or `Expense`
+- **Amount** — positive number, max 2 decimal places, max $999,999,999.99
+- **Date** — `YYYY-MM-DD` format, valid calendar date between 1900 and 2100
+- **Title** — 1–100 characters
+- **Category** — selected from the available list for the chosen type
+
+Optional field: **Description** (max 500 characters).
+
+All validation is handled by pure functions in `lib/transactions/validator.ts`. All errors are reported together — the form never short-circuits on the first failure.
+
+### Editing a Transaction
+Click the edit icon on any transaction row to re-open the form pre-filled with existing values. The `id` field is immutable and is never changed during an edit. Stale-update protection (`updatedAt` check) prevents silent overwrites if another edit happened in the meantime.
+
+### Deleting a Transaction
+Click the delete icon on a row. A confirmation dialog (`DeleteConfirmDialog.tsx`) appears to prevent accidental deletion. On confirmation, the transaction is removed and all summaries update immediately.
+
+### Filtering Transactions
+Two dropdowns at the top of the list (`TransactionFilter.tsx`) allow filtering by:
+- **Type** — All Types / Income / Expense
+- **Category** — All Categories / any specific category present in the current list
+
+Filters are applied client-side and do not affect persisted data.
+
+### Sorting
+Transactions are always displayed sorted by **date descending** (newest first), with `createdAt` as a secondary sort key for transactions on the same date. This sort order is enforced by `lib/transactions/manager.ts`.
+
+### Persistence
+All transactions are saved to `localStorage` under the key `smart-expense-tracker-transactions` as a JSON array. Data persists across page refreshes and browser restarts.
