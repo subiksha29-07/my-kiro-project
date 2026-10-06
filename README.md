@@ -309,3 +309,33 @@ Two automation hooks in `.kiro/hooks/` run quality gates automatically whenever 
 **Purpose:** Catches TypeScript type errors immediately after every save, before the full test suite runs. Surfaces type regressions as early as possible.
 
 Both hooks are enabled by default (`"enabled": true`) and run the commands directly in the project directory.
+
+---
+
+## Kiro Powers
+
+A custom **Kiro Power** is bundled in `.kiro/powers/expense-validator/`. It provides guided workflows specifically for the property-based testing and validation work in this project.
+
+### What It Does
+
+The Expense Validator Power assists with:
+
+- Running and interpreting property-based tests (`__tests__/**/*.pbt.ts`)
+- Understanding fast-check shrinkage output and creating regression tests from failing counterexamples
+- Verifying that new business rules in `lib/` have corresponding property coverage
+- Generating `fc.Arbitrary` definitions for transaction-related types
+- Checking that EARS acceptance criteria from the specs have test coverage
+
+### Steering Guides Included
+
+The power bundles three workflow steering guides in `.kiro/powers/expense-validator/steering/`:
+
+| Guide | Purpose |
+|---|---|
+| `running-pbt-tests.md` | How to run and interpret property-based test output |
+| `writing-new-properties.md` | How to identify and write new properties for a requirement |
+| `regression-from-counterexample.md` | How to turn a fast-check counterexample into a regression unit test |
+
+### Activation Keywords
+
+The power is activated when working on topics related to: `expense`, `transaction`, `validation`, `fast-check`, `property-based`, `budget`, `balance`, `income`, `testing`, `vitest`.
