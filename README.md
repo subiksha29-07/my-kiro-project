@@ -246,3 +246,38 @@ Test files mirror the `lib/` and `components/` structure. Includes unit tests, c
 
 ### `.kiro/`
 Kiro configuration artefacts: specs, steering documents, hooks, powers, agent definitions, and MCP settings. Does not affect runtime behaviour.
+
+---
+
+## Kiro Workflow
+
+This project was built using [Kiro](https://kiro.dev)'s spec-driven, AI-assisted development workflow. All workflow artefacts are stored in the `.kiro/` directory.
+
+### Specs
+
+Each major feature was designed as a **Kiro Spec** before any implementation began. A spec consists of three files:
+
+| File | Purpose |
+|---|---|
+| `requirements.md` | User stories and EARS-format acceptance criteria |
+| `design.md` | Technical design: data models, component breakdown, function signatures |
+| `tasks.md` | Ordered implementation tasks with dependencies |
+
+Specs exist for three features:
+
+- `.kiro/specs/transaction-management/` — full CRUD for income and expense transactions
+- `.kiro/specs/dashboard-balance/` — real-time summary cards and balance calculation
+- `.kiro/specs/monthly-budget/` — budget setting, monthly expense tracking, progress bar
+
+### Steering Documents
+
+Four **steering documents** in `.kiro/steering/` are loaded by Kiro at the start of every session and guide all code generation decisions:
+
+| File | Governs |
+|---|---|
+| `project-architecture.md` | Layer separation, dependency direction, naming conventions |
+| `coding-conventions.md` | TypeScript patterns, error handling, immutability rules |
+| `testing-conventions.md` | Test structure, PBT patterns, assertion style |
+| `ui-conventions.md` | Tailwind usage, component structure, accessibility requirements |
+
+Steering documents ensure Kiro follows the same conventions consistently across every session without needing to re-explain them.
