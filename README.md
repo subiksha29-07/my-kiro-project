@@ -363,3 +363,32 @@ During development sessions, the filesystem MCP server was used to:
 ### Security Note
 
 The MCP server is credential-free and scoped only to the local project directory. It does not expose any external service, API key, or sensitive credential. The configuration file contains only the command, arguments, and a description — no secrets.
+
+---
+
+## Custom Agent
+
+A custom **Expense Review Agent** is defined in `.kiro/agents/expense-review-agent.md`. It is a read-only analyst agent that audits transaction data against the project's real validation rules.
+
+### What the Agent Does
+
+The agent reviews transaction entries and reports:
+
+- **Validation errors** — checked against the exact rules in `lib/transactions/validator.ts` (title length, amount range, type values, date format and validity, description length)
+- **Suspicious pattern warnings** — duplicate titles, duplicate content (same title + amount + type + date), future-dated transactions, unusually large amounts, unknown categories, and mismatched type/category combinations
+- **Budget impact** — calls the same logic as `lib/budget/manager.ts` to compute monthly expenses and evaluate against a given budget
+
+### Behaviour
+
+- The agent is **read-only by default**. It reads project files freely but will never modify, delete, or create data without explicit user confirmation.
+- It is configured with `tools: ["read"]` in its frontmatter.
+- When reviewing a list of transactions, it provides a summary table grouped by transaction and flags cross-transaction issues (duplicates, clustering) separately.
+- When suggesting corrections, it presents a before/after comparison and waits for explicit user approval before applying any change.
+
+### Usage
+
+Invoke the agent when you want to:
+- Audit existing `localStorage` transaction data for validity issues
+- Verify that a new transaction will pass all validation rules before saving
+- Check whether a set of expenses will breach a monthly budget
+- Understand why a transaction record failed validation
