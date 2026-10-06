@@ -455,3 +455,57 @@ Validates all TypeScript types without emitting any output files. Run this befor
 | `test` | `vitest --run` | Run all tests once |
 | `test:watch` | `vitest` | Run tests in watch mode |
 | `test:coverage` | `vitest --coverage` | Run tests with coverage report |
+
+---
+
+## Running Tests
+
+The test suite uses [Vitest](https://vitest.dev/) and [@testing-library/react](https://testing-library.com/). All test files are in `__tests__/`.
+
+### Run All Tests Once
+
+```bash
+npm run test
+```
+
+Runs `vitest --run` — executes the entire suite once and exits. Covers unit tests, component tests, and all 22 property-based tests.
+
+### Run Tests in Watch Mode
+
+```bash
+npm run test:watch
+```
+
+Runs `vitest` in interactive watch mode. Re-runs affected tests on every file save. Useful during active development.
+
+### Run Tests with Coverage
+
+```bash
+npm run test:coverage
+```
+
+Runs `vitest --coverage` and produces a coverage report. Output is printed to the terminal and saved to `coverage/`.
+
+### Run a Specific Test File
+
+```bash
+npx vitest run __tests__/transactions/manager.pbt.ts
+```
+
+Replace the path with any test file to run only that suite.
+
+### Run Only Property-Based Tests
+
+```bash
+npx vitest run --reporter=verbose __tests__/transactions/manager.pbt.ts __tests__/dashboard/calculator.pbt.ts __tests__/budget/manager.pbt.ts
+```
+
+### Test Suite Summary
+
+| Suite | What it tests |
+|---|---|
+| `__tests__/transactions/` | Validator, CRUD manager, localStorage store, 8 PBT properties |
+| `__tests__/dashboard/` | `calculateSummary`, SummaryCard component, 7 PBT properties |
+| `__tests__/budget/` | Budget manager, localStorage store, 7 PBT properties |
+| `__tests__/components/` | DeleteConfirmDialog, TransactionFilter, TransactionForm, TransactionItem, TransactionList |
+| `__tests__/utils/` | `formatCurrency` utility |
