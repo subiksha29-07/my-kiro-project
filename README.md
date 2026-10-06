@@ -78,3 +78,29 @@ The Smart Expense Tracker implements the following core features:
 - **Empty State Handling** — the dashboard shows a clear call-to-action when no transactions exist
 - **Delete Confirmation** — a confirmation dialog prevents accidental transaction deletion
 - **Stale-Update Protection** — optimistic concurrency prevents silent overwrites during edits
+
+---
+
+## Dashboard Features
+
+The dashboard (`app/(app)/dashboard/page.tsx`) displays a live summary of the user's financial data using the following widgets:
+
+### 💰 Total Income
+Calculated by summing the `amount` of all transactions with `type: 'INCOME'`. Displayed in a green summary card. Updates immediately when income transactions are added, edited, or deleted.
+
+### 💸 Total Expenses
+Calculated by summing the `amount` of all transactions with `type: 'EXPENSE'`. Displayed in a red summary card. Aggregates all expense entries regardless of category or date.
+
+### 📈 Current Balance
+Computed as `totalIncome - totalExpenses`. Displayed in a blue summary card. Shows a negative value (in red) when expenses exceed income.
+
+### 🎯 Monthly Budget
+A user-defined spending limit for the current month. Stored in `localStorage`. The budget widget shows:
+- The budget amount set by the user
+- This month's total expenses
+- Remaining budget (or overspend amount)
+- A visual progress bar that shifts **green → amber → red** as spending approaches and exceeds the limit
+- Status label: `Within Budget` or `Over Budget`
+
+### 📅 This Month's Expenses
+Computed by `computeMonthlyExpenses()` in `lib/budget/manager.ts`. Only counts `EXPENSE` transactions whose `date` field falls within the current calendar month (`YYYY-MM` prefix match). This value drives the budget progress bar.
