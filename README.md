@@ -39,3 +39,42 @@ The project was developed as a **Kiro University** showcase, applying spec-drive
 - [Setup Instructions](#setup-instructions)
 - [Running Tests](#running-tests)
 - [Folder Structure](#folder-structure)
+
+---
+
+## Screenshots
+
+### Dashboard
+![Dashboard — summary cards and budget widget](public/screenshots/dashboard.png)
+
+*Real-time summary cards showing Total Income, Total Expenses, and Current Balance. Budget progress bar and Quick Actions panel.*
+
+### Transaction List
+![Transaction list with entries](public/screenshots/transaction-list.png)
+
+*All transactions listed with type indicator, category badge, date, and amount. Filter dropdowns for Type and Category.*
+
+### Add Transaction Form
+![Add Transaction form](public/screenshots/add-transaction.png)
+
+*Form for adding a new transaction with type, amount, date, title, category, and optional description fields.*
+
+### Category Manager
+![Category Manager modal](public/screenshots/category-manager.png)
+
+*Modal for managing custom expense and income categories. Changes apply to the transaction form and filter dropdowns.*
+
+---
+
+## Features
+
+The Smart Expense Tracker implements the following core features:
+
+- **Dashboard** — real-time summary of total income, total expenses, and current balance
+- **Monthly Budget** — set a spending limit and track progress with a visual bar
+- **Transaction Management** — add, edit, delete, filter, and sort income and expense records
+- **Category Management** — create and remove custom categories for both income and expenses
+- **Data Persistence** — all data is saved to `localStorage` and survives page refreshes
+- **Empty State Handling** — the dashboard shows a clear call-to-action when no transactions exist
+- **Delete Confirmation** — a confirmation dialog prevents accidental transaction deletion
+- **Stale-Update Protection** — optimistic concurrency prevents silent overwrites during edits
