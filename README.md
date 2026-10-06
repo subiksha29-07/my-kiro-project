@@ -509,3 +509,125 @@ npx vitest run --reporter=verbose __tests__/transactions/manager.pbt.ts __tests_
 | `__tests__/budget/` | Budget manager, localStorage store, 7 PBT properties |
 | `__tests__/components/` | DeleteConfirmDialog, TransactionFilter, TransactionForm, TransactionItem, TransactionList |
 | `__tests__/utils/` | `formatCurrency` utility |
+
+---
+
+## Folder Structure
+
+```
+my-kiro-project/
+├── app/                              # Next.js App Router
+│   ├── layout.tsx                   # Root HTML layout, font loading
+│   ├── page.tsx                     # Landing page (/)
+│   ├── globals.css                  # Global Tailwind + CSS custom properties
+│   ├── favicon.ico
+│   ├── fonts/                       # Geist font files (woff)
+│   └── (app)/                       # Authenticated app shell
+│       ├── layout.tsx               # App layout with sidebar
+│       ├── dashboard/
+│       │   └── page.tsx             # Dashboard page (/dashboard)
+│       └── transactions/
+│           └── page.tsx             # Transactions page (/transactions)
+│
+├── components/                      # React client components
+│   ├── auth/
+│   │   ├── AuthModal.tsx            # Sign in / register modal
+│   │   └── AuthButtons.tsx          # Auth trigger buttons
+│   ├── budget/
+│   │   ├── BudgetWidget.tsx         # Full budget status display
+│   │   ├── BudgetForm.tsx           # Budget amount input form
+│   │   └── BudgetProgressBar.tsx    # Visual progress bar
+│   ├── dashboard/
+│   │   ├── BalanceSummary.tsx       # Grid of 3 summary cards
+│   │   ├── SummaryCard.tsx          # Individual metric card
+│   │   ├── MonthlyBreakdown.tsx     # Monthly expense breakdown
+│   │   └── EmptyState.tsx           # CTA shown when no transactions exist
+│   ├── layout/
+│   │   └── Sidebar.tsx              # Navigation sidebar
+│   ├── settings/
+│   │   └── CategoryManager.tsx      # Add/delete custom categories
+│   └── transactions/
+│       ├── TransactionForm.tsx      # Add/edit form with validation
+│       ├── TransactionList.tsx      # Transaction list container
+│       ├── TransactionItem.tsx      # Individual transaction row
+│       ├── TransactionFilter.tsx    # Type + category filter dropdowns
+│       └── DeleteConfirmDialog.tsx  # Deletion confirmation modal
+│
+├── lib/                             # Pure TypeScript business logic (no React)
+│   ├── budget/
+│   │   ├── manager.ts               # evaluateBudget, computeMonthlyExpenses
+│   │   └── store.ts                 # localStorage read/write for budget
+│   ├── categories/
+│   │   └── store.ts                 # localStorage read/write for categories
+│   ├── dashboard/
+│   │   └── calculator.ts            # calculateSummary pure function
+│   ├── transactions/
+│   │   ├── constants.ts             # Built-in category lists
+│   │   ├── manager.ts               # addTransaction, updateTransaction, deleteTransaction, getTransactions
+│   │   ├── store.ts                 # localStorage read/write for transactions
+│   │   ├── types.ts                 # Transaction, TransactionInput TypeScript interfaces
+│   │   └── validator.ts             # validateTransaction pure function
+│   └── utils/
+│       └── currency.ts              # formatCurrency utility
+│
+├── __tests__/                       # All test files
+│   ├── arbitraries.ts               # Shared fast-check generators
+│   ├── budget/
+│   │   ├── manager.pbt.ts           # 7 property-based tests for budget logic
+│   │   ├── manager.test.ts          # Unit tests for budget manager
+│   │   └── store.test.ts            # Unit tests for budget store
+│   ├── components/
+│   │   ├── DeleteConfirmDialog.test.tsx
+│   │   ├── TransactionFilter.test.tsx
+│   │   ├── TransactionForm.test.tsx
+│   │   ├── TransactionItem.test.tsx
+│   │   └── TransactionList.test.tsx
+│   ├── dashboard/
+│   │   ├── calculator.pbt.ts        # 7 property-based tests for calculator
+│   │   ├── calculator.test.ts       # Unit tests for calculateSummary
+│   │   └── SummaryCard.test.tsx     # Component tests for SummaryCard
+│   ├── transactions/
+│   │   ├── manager.pbt.ts           # 8 property-based tests for transaction manager
+│   │   ├── manager.test.ts          # Unit tests for transaction manager
+│   │   ├── store.test.ts            # Unit tests for transaction store
+│   │   └── validator.test.ts        # Unit tests for validateTransaction
+│   └── utils/
+│       └── currency.test.ts         # Unit tests for formatCurrency
+│
+├── public/                          # Static assets served at /
+│   ├── hero-bg.jpg                  # Landing page hero background image
+│   └── screenshots/                 # App screenshots used in README
+│
+├── .kiro/                           # Kiro configuration (does not affect runtime)
+│   ├── agents/
+│   │   └── expense-review-agent.md  # Custom Expense Review Agent definition
+│   ├── hooks/
+│   │   ├── run-tests-on-lib-change.kiro.hook
+│   │   └── typecheck-on-change.kiro.hook
+│   ├── powers/
+│   │   └── expense-validator/       # Custom Kiro Power with steering guides
+│   ├── settings/
+│   │   └── mcp.json                 # MCP filesystem server configuration
+│   ├── specs/
+│   │   ├── dashboard-balance/       # Spec: requirements, design, tasks
+│   │   ├── monthly-budget/          # Spec: requirements, design, tasks
+│   │   └── transaction-management/  # Spec: requirements, design, tasks
+│   └── steering/
+│       ├── coding-conventions.md
+│       ├── project-architecture.md
+│       ├── testing-conventions.md
+│       └── ui-conventions.md
+│
+├── next.config.mjs                  # Next.js configuration
+├── tailwind.config.ts               # Tailwind CSS configuration
+├── tsconfig.json                    # TypeScript configuration
+├── vitest.config.ts                 # Vitest configuration
+├── vitest.setup.ts                  # Vitest global setup (jest-dom matchers)
+├── postcss.config.mjs               # PostCSS configuration
+├── package.json                     # Dependencies and npm scripts
+└── README.md                        # This file
+```
+
+---
+
+> Built with ❤️ using [Kiro](https://kiro.dev) — the AI-powered development environment.
