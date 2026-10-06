@@ -339,3 +339,27 @@ The power bundles three workflow steering guides in `.kiro/powers/expense-valida
 ### Activation Keywords
 
 The power is activated when working on topics related to: `expense`, `transaction`, `validation`, `fast-check`, `property-based`, `budget`, `balance`, `income`, `testing`, `vitest`.
+
+---
+
+## MCP Configuration
+
+The project configures a **Model Context Protocol (MCP)** server in `.kiro/settings/mcp.json`. This allows Kiro to read and navigate the project's source files in a structured way during development and code review sessions.
+
+### What Is Configured
+
+A single MCP server named `filesystem` is registered using the `@modelcontextprotocol/server-filesystem` package. It is scoped to the project root directory and provides Kiro with structured read/write access to source files.
+
+The configuration uses `npx -y` to run the server without a permanent global install, and passes the project root path as the only argument.
+
+### Purpose
+
+During development sessions, the filesystem MCP server was used to:
+
+- Read source files (`lib/`, `components/`, `__tests__/`) to verify existing logic before generating new code
+- Inspect test output and spec files to ensure implementations matched requirements
+- Navigate the project structure without relying on Kiro's built-in file tools alone
+
+### Security Note
+
+The MCP server is credential-free and scoped only to the local project directory. It does not expose any external service, API key, or sensitive credential. The configuration file contains only the command, arguments, and a description — no secrets.
