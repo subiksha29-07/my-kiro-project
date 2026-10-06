@@ -163,3 +163,52 @@ Custom categories are stored in `localStorage` under the key `smart-expense-trac
 
 ### Removing a Category
 Categories can be removed from the Category Manager. Removing a category does not retroactively change existing transactions that used it — it only removes the option from future selections.
+
+---
+
+## Testing Approach
+
+The project uses [Vitest](https://vitest.dev/) as the test runner and [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/) for component tests. Tests are located in `__tests__/` and mirror the `lib/` and `components/` structure.
+
+### Test Types
+
+**Unit tests** — test pure functions in `lib/` directly, covering validation logic, CRUD operations, currency formatting, and budget calculations.
+
+**Component tests** — render React components in a jsdom environment and assert on rendered output and user interactions.
+
+**Property-based tests (PBT)** — use [fast-check](https://fast-check.dev/) to generate hundreds of random inputs and verify that mathematical invariants hold across all of them. PBT files are named `*.pbt.ts`.
+
+### Property-Based Tests
+
+There are **22 properties** across three suites:
+
+**`__tests__/transactions/manager.pbt.ts`** (8 properties)
+- `balance === totalIncome - totalExpenses` for any transaction list
+- `validateTransaction` always passes for generated valid inputs
+- `getTransactions` result is always a subset of the store
+- Adding an EXPENSE increases total expenses by exactly that amount
+- Deleting a transaction reduces store length by exactly 1
+- Sort order is always date desc, then `createdAt` desc
+- `saveTransactions` → `loadTransactions` round-trip returns the same list
+- `updateTransaction` never changes a transaction's `id`
+
+**`__tests__/dashboard/calculator.pbt.ts`** (7 properties)
+- `balance === totalIncome - totalExpenses` within floating-point tolerance
+- `totalIncome >= 0` and `totalExpenses >= 0` for any list
+- Adding one INCOME of amount `a` → `newBalance === oldBalance + a`
+- Adding one EXPENSE of amount `a` → `newBalance === oldBalance - a`
+- Shuffling the list does not change income, expenses, or balance
+- `calculateSummary([])` always returns all zeros
+
+**`__tests__/budget/manager.pbt.ts`** (7 properties)
+- `monthlyExpenses >= 0` for any list and any month
+- `WITHIN_BUDGET` iff `monthlyExpenses <= budget`
+- `remaining` is non-negative when within budget
+- `overspend` is non-negative when over budget
+- `percentage` is between 0 and its uncapped value; visual fill is capped at 100
+- Adding an EXPENSE in a month increases that month's total by exactly that amount
+- Transactions outside the target month contribute nothing to monthly expenses
+
+### Shared Arbitraries
+
+Reusable fast-check generators are defined in `__tests__/arbitraries.ts` and imported by all PBT files.
