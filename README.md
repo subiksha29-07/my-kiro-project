@@ -392,3 +392,66 @@ Invoke the agent when you want to:
 - Verify that a new transaction will pass all validation rules before saving
 - Check whether a set of expenses will breach a monthly budget
 - Understand why a transaction record failed validation
+
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- **Node.js** 18 or later
+- **npm** 9 or later (bundled with Node.js 18+)
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Run the Development Server
+
+```bash
+npm run dev
+```
+
+Opens the app at [http://localhost:3000](http://localhost:3000). The dev server uses Next.js with fast refresh — changes to components and pages are reflected immediately.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+Produces an optimised static build in `.next/`. To serve the production build locally:
+
+```bash
+npm start
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+Runs Next.js's built-in ESLint configuration against the codebase.
+
+### TypeScript Type Check
+
+```bash
+npx tsc --noEmit
+```
+
+Validates all TypeScript types without emitting any output files. Run this before committing to catch type errors early.
+
+### Available Scripts (from `package.json`)
+
+| Script | Command | Purpose |
+|---|---|---|
+| `dev` | `next dev` | Start development server |
+| `build` | `next build` | Production build |
+| `start` | `next start` | Serve production build |
+| `lint` | `next lint` | Run ESLint |
+| `test` | `vitest --run` | Run all tests once |
+| `test:watch` | `vitest` | Run tests in watch mode |
+| `test:coverage` | `vitest --coverage` | Run tests with coverage report |
