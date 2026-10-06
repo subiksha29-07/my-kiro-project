@@ -212,3 +212,37 @@ There are **22 properties** across three suites:
 ### Shared Arbitraries
 
 Reusable fast-check generators are defined in `__tests__/arbitraries.ts` and imported by all PBT files.
+
+---
+
+## Project Architecture
+
+The codebase is divided into three main layers with a strict one-way dependency rule:
+
+```
+app/*  →  components/*  →  lib/*
+                ↑
+          __tests__/*
+```
+
+### `app/`
+Next.js App Router pages and layouts. Contains the landing page, the app shell layout, the dashboard page, and the transactions page. Pages are thin — they compose components and pass data down.
+
+### `components/`
+React client components (`'use client'`). Grouped by feature: `auth/`, `budget/`, `dashboard/`, `layout/`, `settings/`, `transactions/`. Components read from and write to `lib/` — they never access `localStorage` directly.
+
+### `lib/`
+Pure TypeScript business logic with no React dependencies. Divided into:
+- `lib/transactions/` — types, validation, CRUD manager, localStorage store, constants
+- `lib/dashboard/` — `calculateSummary()` pure function
+- `lib/budget/` — `evaluateBudget()`, `computeMonthlyExpenses()`, localStorage store
+- `lib/categories/` — localStorage store for custom categories
+- `lib/utils/` — `formatCurrency()` utility
+
+Because `lib/` has no React dependency, every function in it is directly unit-testable without mounting a component.
+
+### `__tests__/`
+Test files mirror the `lib/` and `components/` structure. Includes unit tests, component tests, and property-based tests (`*.pbt.ts`). Shared fast-check arbitraries live in `__tests__/arbitraries.ts`.
+
+### `.kiro/`
+Kiro configuration artefacts: specs, steering documents, hooks, powers, agent definitions, and MCP settings. Does not affect runtime behaviour.
