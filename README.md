@@ -281,3 +281,31 @@ Four **steering documents** in `.kiro/steering/` are loaded by Kiro at the start
 | `ui-conventions.md` | Tailwind usage, component structure, accessibility requirements |
 
 Steering documents ensure Kiro follows the same conventions consistently across every session without needing to re-explain them.
+
+---
+
+## Kiro Hooks
+
+Two automation hooks in `.kiro/hooks/` run quality gates automatically whenever source files are saved.
+
+### `run-tests-on-lib-change.kiro.hook`
+
+**Trigger:** Any `.ts` or `.tsx` file edited inside `lib/` or `__tests__/`
+
+**Action:** Runs `npm run test` (Vitest in `--run` mode, exits after one pass)
+
+**Timeout:** 90 seconds
+
+**Purpose:** Keeps the full test suite green as business logic evolves. Covers unit tests, component tests, and all 22 property-based tests.
+
+### `typecheck-on-change.kiro.hook`
+
+**Trigger:** Any `.ts` or `.tsx` file edited inside `lib/`, `components/`, or `app/`
+
+**Action:** Runs `npx tsc --noEmit`
+
+**Timeout:** 30 seconds
+
+**Purpose:** Catches TypeScript type errors immediately after every save, before the full test suite runs. Surfaces type regressions as early as possible.
+
+Both hooks are enabled by default (`"enabled": true`) and run the commands directly in the project directory.
