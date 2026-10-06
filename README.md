@@ -141,3 +141,25 @@ Transactions are always displayed sorted by **date descending** (newest first), 
 
 ### Persistence
 All transactions are saved to `localStorage` under the key `smart-expense-tracker-transactions` as a JSON array. Data persists across page refreshes and browser restarts.
+
+---
+
+## Category Management
+
+Categories are used to classify each transaction. The project ships with a set of built-in categories defined in `lib/transactions/constants.ts`:
+
+**Built-in Income categories:** Salary, Freelance, Investment, Gift, Other Income
+
+**Built-in Expense categories:** Food, Transport, Housing, Healthcare, Entertainment, Education, Shopping, Other Expense
+
+### Custom Categories
+Users can create their own categories using the **Category Manager** (`components/settings/CategoryManager.tsx`), accessible via the Categories button on the Transactions page. The modal provides:
+- A text input (comma-separated) to add multiple categories at once
+- Separate tabs for Expense and Income category lists
+- Tag-style chips showing the current categories
+- A **Save Categories** button that applies changes immediately
+
+Custom categories are stored in `localStorage` under the key `smart-expense-tracker-categories`. Once saved, they appear in both the transaction form's category dropdown and the filter dropdown on the Transactions page.
+
+### Removing a Category
+Categories can be removed from the Category Manager. Removing a category does not retroactively change existing transactions that used it — it only removes the option from future selections.
